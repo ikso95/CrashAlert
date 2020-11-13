@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "927680837436",
+    "firebase_url": "https://crashalert-37b73.firebaseio.com",
+    "project_id": "crashalert-37b73",
+    "storage_bucket": "crashalert-37b73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927680837436:android:aa3990ea1b7b913c935039",
+        "android_client_info": {
+          "package_name": "pl.foxcode.crashalert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "927680837436-e3ejgdcujg96rp5g9ol53emaadklv3j9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCPwqd2goW8a6a8hPdq5EuZCYYxBSN0B4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "927680837436-e3ejgdcujg96rp5g9ol53emaadklv3j9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">CrashAlert</string>
+    <string name="email">Email</string>
+    <string name="sign_up">Sign up</string>
+    <string name="password">Password</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="signUpError">Email already in use</string>
+    <string name="email_error">Invalid email</string>
+    <string name="password_error">Invalid password</string>
+    <string name="password_repeated_error">Passwords do not match</string>
+    <string name="create_new_account">Create new account!</string>
+    <string name="password_requirements">"Password must contain at least: 6 characters, one uppercase letter, one lowercase letter, one number, one special character (!?@#$%^&amp;+=)"</string>
 </resources>
