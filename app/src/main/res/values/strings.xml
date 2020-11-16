@@ -8,6 +8,10 @@
     <string name="email_error">Invalid email</string>
     <string name="password_error">Invalid password</string>
     <string name="password_repeated_error">Passwords do not match</string>
-    <string name="create_new_account">Create new account!</string>
+    <string name="create_new_account">Don\'t have an account yet? Sign up</string>
     <string name="password_requirements">"Password must contain at least: 6 characters, one uppercase letter, one lowercase letter, one number, one special character (!?@#$%^&amp;+=)"</string>
+    <string name="log_in">Login</string>
+    <string name="sign_in_error">Upsss, sorry. Email or password is incorrect</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="reset_password">We sent you an email with a link to reset your password!</string>
 </resources>

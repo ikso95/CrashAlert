@@ -9,11 +9,14 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_sign_up.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import pl.foxcode.crashalert.InputChecker
 import pl.foxcode.crashalert.R
 
 class SignUpActivity : AppCompatActivity() {
-
 
     private lateinit var mAuth : FirebaseAuth
 
@@ -31,6 +34,7 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     fun signUpNewUser(email : String, password :String, passwordRepeated : String){
+
         if(InputChecker.isEmailCorrect(email)
             && InputChecker.isPasswordCorrect(password)
             && InputChecker.areStringsTheSame(password, passwordRepeated))
@@ -50,8 +54,8 @@ class SignUpActivity : AppCompatActivity() {
 
             })
         }
-        if(!InputChecker.isEmailCorrect(email)) editText_email_signUp.error = getString(R.string.email_error)
-        if(!InputChecker.isPasswordCorrect(password)) editText_password_signUp.error = getString(R.string.password_error)
-        if(!InputChecker.areStringsTheSame(password,passwordRepeated)) editText_password_repeat_signUp.error = getString(R.string.password_repeated_error)
+        if(!InputChecker.isEmailCorrect(email)) textInputLayout_email_sign_up.error = getString(R.string.email_error)
+        if(!InputChecker.isPasswordCorrect(password)) textInputLayout_password_sign_up.error = getString(R.string.password_error)
+        if(!InputChecker.areStringsTheSame(password,passwordRepeated)) textInputLayout_password_repeat_sign_up.error = getString(R.string.password_repeated_error)
     }
 }
