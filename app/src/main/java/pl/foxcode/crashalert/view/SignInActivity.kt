@@ -41,7 +41,6 @@ class SignInActivity : AppCompatActivity() {
             if(InputChecker.isEmailCorrect(editText_email_sign_in.text.toString()))
             {
                 mAuth.sendPasswordResetEmail(editText_email_sign_in.text.toString())
-
                 Toast.makeText(applicationContext,getString(R.string.reset_password),Toast.LENGTH_LONG).show()
             }
 
@@ -55,7 +54,7 @@ class SignInActivity : AppCompatActivity() {
         val currentUser = mAuth.currentUser
         if(currentUser!=null)
         {
-            val goToNextActivityIntent = Intent(applicationContext, TestActivity::class.java)
+            val goToNextActivityIntent = Intent(applicationContext, MapActivity::class.java)
             startActivity(goToNextActivityIntent)
         }
 
@@ -68,7 +67,7 @@ class SignInActivity : AppCompatActivity() {
                 .addOnCompleteListener(this, object : OnCompleteListener<AuthResult> {
                     override fun onComplete(task: Task<AuthResult>) {
                         if (task.isSuccessful) {
-                            val goToNextActivityIntent = Intent(applicationContext, TestActivity::class.java)
+                            val goToNextActivityIntent = Intent(applicationContext, MapActivity::class.java)
                             startActivity(goToNextActivityIntent)
                         }
                         else {

@@ -14,4 +14,9 @@
     <string name="sign_in_error">Upsss, sorry. Email or password is incorrect</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password">We sent you an email with a link to reset your password!</string>
+    <string name="title_activity_map">Map</string>
+    <string name="cancel">cancel</string>
+    <string name="permission_dialog_message">For you to be able to use the application, you must grant permission to use the phone\'s location.</string>
+    <string name="permission_dialog_title">Permission needed</string>
+    <string name="ok">Ok</string>
 </resources>
