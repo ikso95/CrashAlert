@@ -54,8 +54,10 @@ class SignInActivity : AppCompatActivity() {
         val currentUser = mAuth.currentUser
         if(currentUser!=null)
         {
+
             val goToNextActivityIntent = Intent(applicationContext, MapActivity::class.java)
             startActivity(goToNextActivityIntent)
+            finish()
         }
 
     }

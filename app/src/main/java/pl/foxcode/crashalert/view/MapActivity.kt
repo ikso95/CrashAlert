@@ -12,12 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -27,7 +25,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.synthetic.main.activity_map.*
 import pl.foxcode.crashalert.R
 
-class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
+class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -36,9 +34,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
 
-    private lateinit var currentCenter : LatLng
+    private lateinit var currentCenter: LatLng
 
     private var locationUpdateState = false
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
         private const val REQUEST_CHECK_SETTINGS = 2
@@ -52,7 +51,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         locationCallback = object : LocationCallback() {
@@ -60,7 +58,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
                 super.onLocationResult(locationResult)
 
                 lastLocation = locationResult.lastLocation
-                //placeMarkerOnMap(LatLng(lastLocation.latitude, lastLocation.longitude))
             }
         }
 
@@ -72,35 +69,45 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             imageView_marker.visibility = View.INVISIBLE
             floatingActionButton_setMarker.visibility = View.GONE
             floatingActionButton_sendMarker.visibility = View.VISIBLE
+            floatingActionButton_cancel.visibility = View.VISIBLE
         }
 
         floatingActionButton_sendMarker.setOnClickListener {
             //alertDialog
-
-
             floatingActionButton_sendMarker.visibility = View.GONE
+            floatingActionButton_cancel.visibility = View.GONE
+            floatingActionButton_setMarker.visibility = View.VISIBLE
+            map.clear()
+            imageView_marker.visibility = View.VISIBLE
+
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.success_title))
+                .setMessage(getString(R.string.success_data_sent))
+                .setPositiveButton(
+                    getString(R.string.ok),
+                    object : DialogInterface.OnClickListener {
+                        override fun onClick(dialogInterface: DialogInterface?, p1: Int) {
+                        }
+                    })
+                .setIcon(R.drawable.ic_check)
+                .show()
+        }
+
+        floatingActionButton_cancel.setOnClickListener {
+            floatingActionButton_sendMarker.visibility = View.GONE
+            floatingActionButton_cancel.visibility = View.GONE
             floatingActionButton_setMarker.visibility = View.VISIBLE
             map.clear()
             imageView_marker.visibility = View.VISIBLE
         }
 
 
-
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setOnMarkerClickListener(this)
-
 
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -120,26 +127,29 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                //placeMarkerOnMap(currentLatLng)
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16.0f))
             }
         }
 
-        map.setOnCameraIdleListener(object : GoogleMap.OnCameraIdleListener{
+        map.setOnCameraIdleListener(object : GoogleMap.OnCameraIdleListener {
             override fun onCameraIdle() {
-                var cameraPosition = map.cameraPosition
+                val cameraPosition = map.cameraPosition
                 currentCenter = cameraPosition.target
             }
-
         })
     }
 
     private fun placeMarkerOnMap(location: LatLng) {
         val markerOptions = MarkerOptions().position(location)
             .draggable(true)
-
-
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(resources, R.drawable.ic_user_location)))
+        markerOptions.icon(
+            BitmapDescriptorFactory.fromBitmap(
+                BitmapFactory.decodeResource(
+                    resources,
+                    R.drawable.ic_crash_marker2
+                )
+            )
+        )
         map.addMarker(markerOptions)
     }
 
@@ -149,20 +159,29 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
     }
 
     private fun startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE)
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
             return
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */)
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            null /* Looper */
+        )
     }
 
     private fun createLocationRequest() {
 
         locationRequest = LocationRequest()
-        locationRequest.interval = 60000
+        locationRequest.interval = 60000 // 1 minute
         locationRequest.fastestInterval = 60000
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
@@ -177,17 +196,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             startLocationUpdates()
         }
         task.addOnFailureListener { e ->
-            // 6
             if (e is ResolvableApiException) {
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
                 try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-                    e.startResolutionForResult(this@MapActivity,
-                        REQUEST_CHECK_SETTINGS)
+                    e.startResolutionForResult(
+                        this@MapActivity,
+                        REQUEST_CHECK_SETTINGS
+                    )
                 } catch (sendEx: IntentSender.SendIntentException) {
-                    // Ignore the error.
                 }
             }
         }
@@ -202,7 +217,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             }
         }
     }
-
 
 
     override fun onPause() {
@@ -221,15 +235,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
     private fun requestFuseLocationPermission(permission: String) {
         when {
-            ContextCompat.checkSelfPermission(applicationContext,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED -> {
+            ContextCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED -> {
                 // You can use the API that requires the permission.
             }
             shouldShowRequestPermissionRationale(permission) -> {
                 MaterialAlertDialogBuilder(applicationContext)
                     .setTitle(getString(R.string.permission_dialog_title))
                     .setMessage(getString(R.string.permission_dialog_message))
-                    .setNeutralButton(R.string.ok, object : DialogInterface.OnClickListener{
+                    .setNeutralButton(R.string.ok, object : DialogInterface.OnClickListener {
                         override fun onClick(dialog: DialogInterface?, i: Int) {
                             dialog?.dismiss()
                         }
@@ -238,13 +254,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             }
             else -> {
 
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    LOCATION_PERMISSION_REQUEST_CODE
+                )
             }
         }
     }
-
-
-
 
 
 }

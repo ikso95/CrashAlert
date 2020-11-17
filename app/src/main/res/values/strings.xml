@@ -19,4 +19,6 @@
     <string name="permission_dialog_message">For you to be able to use the application, you must grant permission to use the phone\'s location.</string>
     <string name="permission_dialog_title">Permission needed</string>
     <string name="ok">Ok</string>
+    <string name="success_data_sent">Thank you! The ticket has been added.</string>
+    <string name="success_title">Success!</string>
 </resources>
