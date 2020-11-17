@@ -11,7 +11,9 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.common.api.ResolvableApiException
@@ -22,20 +24,25 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_map.*
+import kotlinx.android.synthetic.main.navigation_header.*
 import pl.foxcode.crashalert.R
+import pl.foxcode.crashalert.model.DatabaseMarker
+import pl.foxcode.crashalert.model.DatabaseUser
+import java.util.*
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
-
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
-
     private lateinit var currentCenter: LatLng
-
     private var locationUpdateState = false
 
     companion object {
@@ -43,6 +50,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         private const val REQUEST_CHECK_SETTINGS = 2
     }
 
+    private lateinit var databaseReference: DatabaseReference
+    private lateinit var databaseReference2: DatabaseReference
+    private lateinit var mAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +60,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        mAuth = FirebaseAuth.getInstance()
+
+        val database = FirebaseDatabase.getInstance()
+        databaseReference = database.getReference("Data")
+        databaseReference2 = database.getReference("Users")
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -63,6 +79,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
 
         createLocationRequest()
 
+
+        //FAB onClick Actions
         floatingActionButton_setMarker.setOnClickListener {
             Log.d("marker", "onCreate: " + currentCenter)
             placeMarkerOnMap(currentCenter)
@@ -73,12 +91,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         }
 
         floatingActionButton_sendMarker.setOnClickListener {
-            //alertDialog
+
             floatingActionButton_sendMarker.visibility = View.GONE
             floatingActionButton_cancel.visibility = View.GONE
             floatingActionButton_setMarker.visibility = View.VISIBLE
             map.clear()
             imageView_marker.visibility = View.VISIBLE
+
+            val databaseMarkerInput = DatabaseMarker(
+                currentCenter.longitude.toString(),
+                currentCenter.latitude.toString(),
+                mAuth.currentUser!!.uid,
+                Date().time.toString()
+            )
+            databaseReference.child("${Date().time}").setValue(databaseMarkerInput)
+
+            val databaseUserInput = DatabaseUser("regular", 0)
+            databaseReference2.child(mAuth.currentUser!!.uid).setValue(databaseUserInput)   ///////////////////////////////////////
 
             MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.success_title))
@@ -99,6 +128,75 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
             floatingActionButton_setMarker.visibility = View.VISIBLE
             map.clear()
             imageView_marker.visibility = View.VISIBLE
+        }
+
+        floatingActionButton_open_menu.setOnClickListener {
+            drawerLayout.openDrawer(Gravity.START)
+            textView_user_email.text = mAuth.currentUser?.email
+            textView_user_ID.text = mAuth.currentUser?.uid
+        }
+
+
+        //navigation drawer onClick actions
+        val navigationView = findViewById<NavigationView>(R.id.navigationView)
+        navigationView.setNavigationItemSelectedListener {
+            if (it.itemId == R.id.menu_item_change_email) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(getString(R.string.dialog_change_email_title))
+                    .setMessage(getString(R.string.dialog_chane_email_message))
+                    .setPositiveButton(
+                        getString(R.string.ok),
+                        object : DialogInterface.OnClickListener {
+                            override fun onClick(dialogInterface: DialogInterface?, p1: Int) {
+                                val user = mAuth.currentUser
+                                if (user != null)
+                                    user.updateEmail(mAuth.currentUser?.email.toString())
+                                Toast.makeText(
+                                    applicationContext,
+                                    getString(R.string.reset_email),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        })
+                    .setNegativeButton(
+                        getString(R.string.cancel),
+                        object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                            }
+                        })
+                    .setIcon(R.drawable.ic_action_warning)
+                    .show()
+            }
+            if (it.itemId == R.id.menu_item_change_password) {
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(getString(R.string.dialog_change_password_title))
+                    .setMessage(getString(R.string.dialog_chane_password_message))
+                    .setPositiveButton(
+                        getString(R.string.ok),
+                        object : DialogInterface.OnClickListener {
+                            override fun onClick(dialogInterface: DialogInterface?, p1: Int) {
+                                mAuth.sendPasswordResetEmail(mAuth.currentUser!!.email.toString())
+                                Toast.makeText(
+                                    applicationContext,
+                                    getString(R.string.reset_password),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        })
+                    .setNegativeButton(
+                        getString(R.string.cancel),
+                        object : DialogInterface.OnClickListener {
+                            override fun onClick(p0: DialogInterface?, p1: Int) {
+                            }
+                        })
+                    .setIcon(R.drawable.ic_action_warning)
+                    .show()
+            }
+            if (it.itemId == R.id.menu_item_log_out) {
+                mAuth.signOut()
+                startActivity(Intent(applicationContext, SignInActivity::class.java))
+            }
+            false
         }
 
 
@@ -166,7 +264,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerC
         ) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE
             )
             return

@@ -15,10 +15,22 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password">We sent you an email with a link to reset your password!</string>
     <string name="title_activity_map">Map</string>
-    <string name="cancel">cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="permission_dialog_message">For you to be able to use the application, you must grant permission to use the phone\'s location.</string>
     <string name="permission_dialog_title">Permission needed</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="success_data_sent">Thank you! The ticket has been added.</string>
     <string name="success_title">Success!</string>
+    <string name="settings">Settings</string>
+    <string name="log_out">Log out</string>
+    <string name="user_email">User email</string>
+    <string name="user_id">User ID</string>
+    <string name="user_points">Points</string>
+    <string name="change_email">Change email</string>
+    <string name="change_password">Change password</string>
+    <string name="reset_email">We sent you an email with a link to change your email!</string>
+    <string name="dialog_change_email_title">Email change</string>
+    <string name="dialog_chane_email_message">Are you sure you want to change the current email?</string>
+    <string name="dialog_change_password_title">Password change</string>
+    <string name="dialog_chane_password_message">Are you sure you want to change the current password?</string>
 </resources>
